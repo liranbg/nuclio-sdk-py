@@ -39,4 +39,4 @@ jobs:
         if: matrix.python-version != '2.7'
 
       - name: Run tests
-        run: pipenv run test
+        run: python -m pipenv run test
