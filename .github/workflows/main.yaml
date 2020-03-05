@@ -31,12 +31,12 @@ jobs:
       - name: Install ${{ matrix.python-version }} deps
         run: |
           python -m pip install simplejson
-        if: matrix.python-version == "2.7"
+        if: matrix.python-version == '2.7'
 
       - name: Install ${{ matrix.python-version }} deps
         run: |
           python -m pip install orjson
-        if: matrix.python-version != "2.7"
+        if: matrix.python-version != '2.7'
 
       - name: Install dependencies
         run: pipenv run test
