@@ -26,7 +26,6 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --user pipenv
           python -m pipenv --python ${{ matrix.python-version }}
-          python -m pipenv install --dev
 
       - name: Install ${{ matrix.python-version }} deps
         run: |
@@ -35,6 +34,7 @@ jobs:
 
       - name: Install ${{ matrix.python-version }} deps
         run: |
+          python -m pipenv install --dev
           python -m pipenv install orjson
         if: matrix.python-version != '2.7'
 
