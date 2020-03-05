@@ -21,3 +21,7 @@ clean_pyc:
 .PHONY: flake8
 flake8:
 	pipenv run flake8
+
+.PHONY: test
+test:
+	pipenv run test

@@ -20,8 +20,6 @@ if sys.version_info[:2] < (3, 0):
 else:
     from http.client import HTTPConnection
 
-import simplejson as json
-
 import nuclio_sdk
 
 
@@ -57,7 +55,7 @@ class Platform(object):
         # if the user passes a dict as a body, assume json serialization. otherwise take content type from
         # body or use plain text
         if isinstance(event.body, dict):
-            body = json.dumps(event.body)
+            body = nuclio_sdk.json.dumps(event.body)
             content_type = 'application/json'
         else:
             body = event.body
@@ -103,7 +101,7 @@ class Platform(object):
 
     def _try_parse_json(self, data):
         try:
-            return json.loads(data)
+            return nuclio_sdk.json.loads(data)
         except:
             return data
 
