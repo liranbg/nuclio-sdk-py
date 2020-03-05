@@ -9,6 +9,8 @@ nuclio-sdk = {editable = true,path = "."}
 [dev-packages]
 flake8 = "*"
 twine = "*"
+mock = "*"
+orjson = "*"
 
 [requires]
 python_version = "3.7"

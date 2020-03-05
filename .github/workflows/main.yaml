@@ -29,7 +29,7 @@ jobs:
 
       - name: Install ${{ matrix.python-version }} deps
         run: |
-          python -m pipenv install simplejson
+          python -m pipenv install simplejson mock
         if: matrix.python-version == '2.7'
 
       - name: Install ${{ matrix.python-version }} deps
