@@ -10,6 +10,7 @@ nuclio-sdk = {editable = true,path = "."}
 flake8 = "*"
 twine = "*"
 orjson = "*"
+bleach = "==3.1.1"
 
 [requires]
 python_version = "3.7"
