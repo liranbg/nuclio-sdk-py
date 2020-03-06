@@ -17,40 +17,37 @@ import io
 import datetime
 
 import nuclio_sdk.test
+import nuclio_sdk.helpers
 
 
 class TestLogger(nuclio_sdk.test.TestCase):
     def setUp(self):
-        self._io = io.StringIO()
         self._logger = nuclio_sdk.Logger(logging.DEBUG)
+
+        # in python 2, StringIO will expect unicode string (u'text' and not 'test')
+        # and since bytes on py2 is an alias to str, we will use that
+        self._io = io.StringIO() if nuclio_sdk.helpers.PYTHON3 else io.BytesIO()
         self._logger.set_handler('default', self._io, nuclio_sdk.logger.JSONFormatter())
 
-    def tearDown(self):
-
-        # override super tearDown
-        pass
-
     def test_log_text(self):
-
-        # regular log line is printed
+        """ regular log line is printed """
         self._logger.debug('TestA')
         self.assertIn('TestA', self._io.getvalue())
 
     def test_log_with_char(self):
-
-        # log line with text kwarg
+        """ log line with text kwarg """
         self._logger.debug_with('TestB', char='a')
         self.assertIn('TestB', self._io.getvalue())
         self.assertIn('"with":{"char":"a"}', self._io.getvalue())
 
     def test_log_with_number(self):
-
-        # log line with int kwarg
+        """ log line with int kwarg """
         self._logger.debug_with('TestC', number=1)
         self.assertIn('TestC', self._io.getvalue())
         self.assertIn('"with":{"number":1}', self._io.getvalue())
 
     def test_log_with_date(self):
+        """ log line with datetime kwarg """
         date = datetime.datetime.strptime('Oct 1 2020', '%b %d %Y')
         self._logger.debug_with('TestD', date=date)
         self.assertIn('TestD', self._io.getvalue())

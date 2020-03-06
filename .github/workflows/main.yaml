@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [2.7, 3.6, 3.7, 3.8]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -28,13 +28,11 @@ jobs:
           python -m pipenv --python ${{ matrix.python-version }}
 
       - name: Install python == 2.7 deps
-        run: |
-          python -m pipenv install simplejson mock
+        run: python -m pipenv install simplejson mock==2.0.0
         if: matrix.python-version == '2.7'
 
       - name: Install python >= 2.7 deps
-        run: |
-          python -m pipenv install --dev
+        run: python -m pipenv install --dev
         if: matrix.python-version != '2.7'
 
       - name: Run tests

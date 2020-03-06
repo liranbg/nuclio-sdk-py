@@ -9,7 +9,6 @@ nuclio-sdk = {editable = true,path = "."}
 [dev-packages]
 flake8 = "*"
 twine = "*"
-mock = "*"
 orjson = "*"
 
 [requires]

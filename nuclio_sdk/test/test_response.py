@@ -12,95 +12,82 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import unittest
 import datetime
 import base64
 
 import nuclio_sdk.test
+import nuclio_sdk.helpers
 
 
 class TestResponse(nuclio_sdk.test.TestCase):
     def setUp(self):
         self._encoder = nuclio_sdk.Encoder()
 
-    def test_make_response_from_handle_response(self):
-        now = datetime.datetime.now()
-        handler_outputs = [
+    def test_str(self):
+        handler_return = 'test'
+        expected_response = self._compile_output_response(body='test')
+        self._validate_response(handler_return, expected_response)
 
-            # handler return body only
-            {
-                'handler_returns': 'test',
-                'created_response': self._compile_output_response(body='test')
-            },
+    def test_int(self):
+        handler_return = 2020
+        expected_response = self._compile_output_response(body=2020)
+        self._validate_response(handler_return, expected_response)
 
-            # handler return body and status code
-            {
-                'handler_returns': (201, 'test'),
-                'created_response': self._compile_output_response(body='test',
-                                                                  status_code=201)
-            },
+    @unittest.skipIf(nuclio_sdk.helpers.PYTHON2, 'on py2 bytes are just an alias to str')
+    def test_bytes(self):
+        handler_return = b'test'
+        expected_response = self._compile_output_response(body='dGVzdA==',  # base64 value for 'test'
+                                                          body_encoding='base64')
+        self._validate_response(handler_return, expected_response)
 
-            # handler return dict body and status code
-            {
-                'handler_returns': (201, {'json': True}),
-                'created_response': self._compile_output_response(body='{"json":true}',
-                                                                  status_code=201,
-                                                                  content_type='application/json')
-            },
+    def test_dict(self):
+        handler_return = {'json': True}
+        expected_response = self._compile_output_response(body='{"json":true}',
+                                                          content_type='application/json')
+        self._validate_response(handler_return, expected_response)
 
-            # handler return dict only
-            {
-                'handler_returns': ({'json': True}),
-                'created_response': self._compile_output_response(body='{"json":true}',
-                                                                  content_type='application/json')
-            },
+    def test_iterable(self):
+        handler_return = [1, 2, 3, True]
+        expected_response = self._compile_output_response(body='[1,2,3,true]',
+                                                          content_type='application/json')
+        self._validate_response(handler_return, expected_response)
 
-            # handler return iterable only
-            {
-                'handler_returns': ([True]),
-                'created_response': self._compile_output_response(body='[true]',
-                                                                  content_type='application/json')
-            },
+    def test_datetime(self):
+        handler_return = datetime.datetime.now()
+        expected_response = self._compile_output_response(body=handler_return)
+        self._validate_response(handler_return, expected_response)
 
-            # handler return nuclio_sdk.Response with text body
-            {
-                'handler_returns': nuclio_sdk.Response(body='test'),
-                'created_response': self._compile_output_response(body='test')
-            },
+    def test_status_code_and_str(self):
+        handler_return = (201, 'test')
+        expected_response = self._compile_output_response(body='test',
+                                                          status_code=handler_return[0])
+        self._validate_response(handler_return, expected_response)
 
-            # handler return nuclio_sdk.Response with dict body
-            {
-                'handler_returns': nuclio_sdk.Response(body={'json': True}),
-                'created_response': self._compile_output_response(body='{"json":true}',
-                                                                  content_type='application/json')
-            },
+    def test_status_code_and_dict(self):
+        handler_return = (201, {'json': True})
+        expected_response = self._compile_output_response(body='{"json":true}',
+                                                          status_code=handler_return[0],
+                                                          content_type='application/json')
+        self._validate_response(handler_return, expected_response)
 
-            # handler return int as body
-            {
-                'handler_returns': 2020,
-                'created_response': self._compile_output_response(body=2020)
-            },
+    def test_sdk_response_str(self):
+        handler_return = nuclio_sdk.Response(body='test')
+        expected_response = self._compile_output_response(body='test')
+        self._validate_response(handler_return, expected_response)
 
-            # handler return datetime
-            {
-                'handler_returns': now,
-                'created_response': self._compile_output_response(body=now)
-            },
+    def test_sdk_response_dict(self):
+        handler_return = {'json': True}
+        expected_response = self._compile_output_response(body='{"json":true}',
+                                                          content_type='application/json')
+        self._validate_response(handler_return, expected_response)
 
-            # handler return bytes, response with base64
-            {
-                'handler_returns': b'hello',
-                'created_response': self._compile_output_response(body=base64.b64encode(b'hello').decode('ascii'),
-                                                                  body_encoding='base64')
-            },
-
-        ]
-        for handler_output in handler_outputs:
-            response = nuclio_sdk.Response.from_entrypoint_output(self._encoder.encode,
-                                                                  handler_output['handler_returns'])
-            self.assertDictEqual(response, handler_output['created_response'])
+    def _validate_response(self, handler_return, expected_response):
+        response = nuclio_sdk.Response.from_entrypoint_output(self._encoder.encode, handler_return)
+        self.assertDictEqual(response, expected_response)
 
     def _compile_output_response(self, **kwargs):
-        return self._merge_dicts(nuclio_sdk.Response.empty_response(), {**kwargs})
+        return self._merge_dicts(nuclio_sdk.Response.empty_response(), kwargs)
 
     def _merge_dicts(self, d1, d2):
         """

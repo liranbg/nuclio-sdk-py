@@ -14,6 +14,8 @@
 
 import base64
 
+import nuclio_sdk.helpers
+
 
 class Response(object):
 
@@ -68,9 +70,12 @@ class Response(object):
         else:
             response['body'] = handler_output
 
-        if isinstance(response['body'], bytes):
-            response['body'] = base64.b64encode(response['body']).decode('ascii')
-            response['body_encoding'] = 'base64'
+        if nuclio_sdk.helpers.PYTHON3:
+
+            # this check is relevant to py3 only as on py2, bytes is just an alias to str
+            if isinstance(response['body'], bytes):
+                response['body'] = base64.b64encode(response['body']).decode('ascii')
+                response['body_encoding'] = 'base64'
 
         return response
 
