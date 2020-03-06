@@ -7,11 +7,11 @@ all:
 
 .PHONY: upload
 upload: clean build
-	pipenv run upload
+	python -m pipenv run upload
 
 .PHONY: build
 build:
-	pipenv run build
+	python -m pipenv run build
 
 .PHONY: clean
 clean:
@@ -23,18 +23,18 @@ clean_pyc:
 
 .PHONY: flake8
 flake8:
-	pipenv run flake8
+	python -m pipenv run flake8
 
 .PHONY: test
 test:
-	pipenv run test
+	python -m pipenv run test
 
 .PHONY: install_pipenv
 install_pipenv:
 	python -m pip install --user pipenv
 	python -m pipenv --python ${PIPENV_PYTHON_VERSION}
 ifeq ($(PIPENV_PYTHON_VERSION), 2.7)
-	pipenv install -r requirements.py2.txt
+	python -m pipenv install -r requirements.py2.txt
 else
-	pipenv install --dev
+	python -m pipenv install --dev
 endif
