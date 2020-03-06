@@ -31,7 +31,7 @@ jobs:
         run: python -m pipenv install simplejson mock==2.0.0
         if: matrix.python-version == '2.7'
 
-      - name: Install python >= 2.7 deps
+      - name: Install python >= 3 deps
         run: python -m pipenv install --dev
         if: matrix.python-version != '2.7'
 
