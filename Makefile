@@ -32,7 +32,7 @@ test:
 .PHONY: install_pipenv
 install_pipenv:
 	python -m pip install --user pipenv
-	python -m pipenv --python ${PYTHON_VERSION}
+	python -m pipenv --python ${PIPENV_PYTHON_VERSION}
 ifeq ($(PIPENV_PYTHON_VERSION), 2.7)
 	pipenv install -r requirements.py2.txt
 else
