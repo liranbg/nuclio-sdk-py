@@ -30,26 +30,28 @@ class TestLogger(nuclio_sdk.test.TestCase):
         # override super tearDown
         pass
 
-    def test_logger_sanity(self):
+    def test_log_text(self):
 
         # regular log line is printed
         self._logger.debug('TestA')
         self.assertIn('TestA', self._io.getvalue())
+
+    def test_log_with_char(self):
 
         # log line with text kwarg
         self._logger.debug_with('TestB', char='a')
         self.assertIn('TestB', self._io.getvalue())
         self.assertIn('"with":{"char":"a"}', self._io.getvalue())
 
+    def test_log_with_number(self):
+
         # log line with int kwarg
         self._logger.debug_with('TestC', number=1)
         self.assertIn('TestC', self._io.getvalue())
         self.assertIn('"with":{"number":1}', self._io.getvalue())
 
-        date = datetime.datetime.fromisoformat('2019-12-04')
+    def test_log_with_date(self):
+        date = datetime.datetime.strptime('Oct 1 2020', '%b %d %Y')
         self._logger.debug_with('TestD', date=date)
         self.assertIn('TestD', self._io.getvalue())
-        self.assertIn('"with":{"date":"2019-12-04T00:00:00"}', self._io.getvalue())
-
-    def _reset_io(self):
-        self._io = io.StringIO()
+        self.assertIn('"with":{"date":"2020-10-01T00:00:00"}', self._io.getvalue())
