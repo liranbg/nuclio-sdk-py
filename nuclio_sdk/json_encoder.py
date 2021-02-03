@@ -14,13 +14,15 @@
 
 import json
 
-import orjson
+# since orjson is considered experimental we lazy load it
 
 
 class Factory(object):
     @staticmethod
     def create_decoder(name):
         if name == "orjson":
+            import orjson
+
             return orjson.loads
         return lambda o: json.loads(o.decode("utf-8"))
 
@@ -50,4 +52,6 @@ class Encoder(json.JSONEncoder):
 
 class OrJsonEncoder(object):
     def encode(self, obj):
+        import orjson
+
         return orjson.dumps(obj).decode()
