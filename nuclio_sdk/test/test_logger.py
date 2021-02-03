@@ -23,7 +23,6 @@ import nuclio_sdk.json_encoder
 
 
 class TestLogger(object):
-
     def test_log_text(self):
         """
         message only log line is printed
@@ -67,7 +66,9 @@ class TestOrJsonEncoder(nuclio_sdk.test.TestCase, TestLogger):
         self._encoder = nuclio_sdk.json_encoder.OrJsonEncoder()
         self._io = io.StringIO()
         self._logger = nuclio_sdk.Logger(logging.DEBUG, "test_logger")
-        self._logger.set_handler("default", self._io, nuclio_sdk.logger.JSONFormatter(self._encoder))
+        self._logger.set_handler(
+            "default", self._io, nuclio_sdk.logger.JSONFormatter(self._encoder)
+        )
 
 
 class TestJsonEncoder(nuclio_sdk.test.TestCase, TestLogger):
@@ -77,4 +78,6 @@ class TestJsonEncoder(nuclio_sdk.test.TestCase, TestLogger):
         self._encoder.key_separator = ":"
         self._io = io.StringIO()
         self._logger = nuclio_sdk.Logger(logging.DEBUG, "test_logger")
-        self._logger.set_handler("default", self._io, nuclio_sdk.logger.JSONFormatter(self._encoder))
+        self._logger.set_handler(
+            "default", self._io, nuclio_sdk.logger.JSONFormatter(self._encoder)
+        )
