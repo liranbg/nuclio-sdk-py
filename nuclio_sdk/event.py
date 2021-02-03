@@ -17,6 +17,8 @@ import sys
 import json
 import datetime
 
+import nuclio_sdk.json_encoder
+
 
 class TriggerInfo(object):
     def __init__(self, kind="", name=""):
@@ -87,7 +89,7 @@ class Event(object):
                 return value
 
     @staticmethod
-    def from_msgpack(parsed_data, json_decoder):
+    def from_msgpack(parsed_data, json_decoder=None):
         """Decode msgpack event encoded as JSON by processor"""
 
         # extract content type, needed to decode body
@@ -153,7 +155,11 @@ class Event(object):
         return decoded_body
 
     @staticmethod
-    def decode_msgpack_body(body, content_type, json_decoder):
+    def decode_msgpack_body(
+        body,
+        content_type,
+        json_decoder=nuclio_sdk.json_encoder.Factory.create_decoder("json"),
+    ):
         """Decode msgpack event body"""
 
         if content_type == "application/json":
