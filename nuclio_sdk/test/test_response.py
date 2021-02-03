@@ -19,10 +19,7 @@ import nuclio_sdk.json_encoder
 import nuclio_sdk.helpers
 
 
-class TestResponse(nuclio_sdk.test.TestCase):
-    def setUp(self):
-        self._encoder = nuclio_sdk.json_encoder.Encoder()
-
+class TestResponse(object):
     def test_str(self):
         handler_return = "test"
         expected_response = self._compile_output_response(body="test")
@@ -43,14 +40,14 @@ class TestResponse(nuclio_sdk.test.TestCase):
     def test_dict(self):
         handler_return = {"json": True}
         expected_response = self._compile_output_response(
-            body='{"json": true}', content_type="application/json"
+            body='{"json":true}', content_type="application/json"
         )
         self._validate_response(handler_return, expected_response)
 
     def test_iterable(self):
         handler_return = [1, 2, 3, True]
         expected_response = self._compile_output_response(
-            body="[1, 2, 3, true]", content_type="application/json"
+            body="[1,2,3,true]", content_type="application/json"
         )
         self._validate_response(handler_return, expected_response)
 
@@ -69,7 +66,7 @@ class TestResponse(nuclio_sdk.test.TestCase):
     def test_status_code_and_dict(self):
         handler_return = (201, {"json": True})
         expected_response = self._compile_output_response(
-            body='{"json": true}',
+            body='{"json":true}',
             status_code=handler_return[0],
             content_type="application/json",
         )
@@ -83,7 +80,7 @@ class TestResponse(nuclio_sdk.test.TestCase):
     def test_sdk_response_dict(self):
         handler_return = {"json": True}
         expected_response = self._compile_output_response(
-            body='{"json": true}', content_type="application/json"
+            body='{"json":true}', content_type="application/json"
         )
         self._validate_response(handler_return, expected_response)
 
@@ -95,3 +92,15 @@ class TestResponse(nuclio_sdk.test.TestCase):
 
     def _compile_output_response(self, **kwargs):
         return {**nuclio_sdk.Response.empty_response(), **kwargs}
+
+
+class TestOrJsonEncoder(nuclio_sdk.test.TestCase, TestResponse):
+    def setUp(self):
+        self._encoder = nuclio_sdk.json_encoder.OrJsonEncoder()
+
+
+class TestJsonEncoder(nuclio_sdk.test.TestCase, TestResponse):
+    def setUp(self):
+        self._encoder = nuclio_sdk.json_encoder.Encoder()
+        self._encoder.item_separator = ","
+        self._encoder.key_separator = ":"

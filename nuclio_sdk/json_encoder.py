@@ -18,7 +18,6 @@ import orjson
 
 
 class Factory(object):
-
     @staticmethod
     def create_decoder(name):
         if name == "orjson":

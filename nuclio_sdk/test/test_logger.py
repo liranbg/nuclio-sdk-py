@@ -19,13 +19,10 @@ import io
 
 import nuclio_sdk.test
 import nuclio_sdk.helpers
+import nuclio_sdk.json_encoder
 
 
-class TestLogger(nuclio_sdk.test.TestCase):
-    def setUp(self):
-        self._io = io.StringIO()
-        self._logger = nuclio_sdk.Logger(logging.DEBUG, "test_logger")
-        self._logger.set_handler("default", self._io, nuclio_sdk.logger.JSONFormatter())
+class TestLogger(object):
 
     def test_log_text(self):
         """
@@ -42,7 +39,7 @@ class TestLogger(nuclio_sdk.test.TestCase):
 
         self._logger.debug_with("TestB", char="a")
         self.assertIn("TestB", self._io.getvalue())
-        self.assertIn('"with": {"char": "a"}', self._io.getvalue())
+        self.assertIn('"with":{"char":"a"}', self._io.getvalue())
 
     def test_log_with_number(self):
         """
@@ -51,7 +48,7 @@ class TestLogger(nuclio_sdk.test.TestCase):
 
         self._logger.debug_with("TestC", number=1)
         self.assertIn("TestC", self._io.getvalue())
-        self.assertIn('"with": {"number": 1}', self._io.getvalue())
+        self.assertIn('"with":{"number":1}', self._io.getvalue())
 
     @unittest.skip("currently unsupported")
     def test_log_with_date(self):
@@ -62,4 +59,22 @@ class TestLogger(nuclio_sdk.test.TestCase):
         date = datetime.datetime.strptime("Oct 1 2020", "%b %d %Y")
         self._logger.debug_with("TestD", date=date)
         self.assertIn("TestD", self._io.getvalue())
-        self.assertIn('"with": {"date": "2020-10-01T00:00:00"}', self._io.getvalue())
+        self.assertIn('"with":{"date":"2020-10-01T00:00:00"}', self._io.getvalue())
+
+
+class TestOrJsonEncoder(nuclio_sdk.test.TestCase, TestLogger):
+    def setUp(self):
+        self._encoder = nuclio_sdk.json_encoder.OrJsonEncoder()
+        self._io = io.StringIO()
+        self._logger = nuclio_sdk.Logger(logging.DEBUG, "test_logger")
+        self._logger.set_handler("default", self._io, nuclio_sdk.logger.JSONFormatter(self._encoder))
+
+
+class TestJsonEncoder(nuclio_sdk.test.TestCase, TestLogger):
+    def setUp(self):
+        self._encoder = nuclio_sdk.json_encoder.Encoder()
+        self._encoder.item_separator = ","
+        self._encoder.key_separator = ":"
+        self._io = io.StringIO()
+        self._logger = nuclio_sdk.Logger(logging.DEBUG, "test_logger")
+        self._logger.set_handler("default", self._io, nuclio_sdk.logger.JSONFormatter(self._encoder))
