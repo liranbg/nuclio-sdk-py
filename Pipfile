@@ -6,6 +6,9 @@ name = "pypi"
 [packages]
 nuclio-sdk = { editable = true, path = "." }
 
+[packages.orjson]
+orjson = ">3,<=3.4"
+
 [dev-packages]
 flake8 = "*"
 twine = "*"

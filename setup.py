@@ -18,7 +18,7 @@ except ImportError:
     from distutils.core import setup
 
 
-def parse_deps():
+def parse_deps(header):
     deps = []
     in_deps = False
     with open("Pipfile") as fp:
@@ -27,16 +27,21 @@ def parse_deps():
                 continue
             elif in_deps and "[" in line:
                 return deps
-            elif line.strip() == "[packages]":
+            elif line.strip() == header:
                 in_deps = True
                 continue
             elif not in_deps:
                 continue
             else:
-                dep, version = [str.strip(val) for val in line.split("=", 1)]
+                dep, version = [val.strip() for val in line.split("=", 1)]
+                if dep == "nuclio-sdk":
+                    continue
                 version = version[1:-1]  # Trim ""
-                deps.append("{}{}".format(dep, version))
+                deps.append(f"{dep}{version}")
 
+
+install_requires = parse_deps("[packages]")
+extras_require = {"experimental": parse_deps("[packages.orjson]")}
 
 setup(
     name="nuclio_sdk",
@@ -49,7 +54,8 @@ setup(
     license="Apache 2",
     url="https://github.com/nuclio/nuclio-sdk-py",
     packages=["nuclio_sdk", "nuclio_sdk.test"],
-    # install_requires=parse_deps(),
+    install_requires=install_requires,
+    extras_require=extras_require,
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
