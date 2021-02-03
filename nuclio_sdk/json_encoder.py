@@ -34,13 +34,6 @@ class Factory(object):
         # default
         return Encoder()
 
-    @staticmethod
-    def kinds():
-        return [
-            "json",
-            "orjson",
-        ]
-
 
 # JSON encoder that can encode custom stuff
 class Encoder(json.JSONEncoder):
