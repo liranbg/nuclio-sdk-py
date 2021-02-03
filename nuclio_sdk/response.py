@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import base64
-import json
 
 
 class Response(object):
@@ -31,8 +30,14 @@ class Response(object):
 
     @staticmethod
     def from_entrypoint_output(json_encoder, handler_output):
-        """Given a handler output's type, generates a response towards the
-        processor"""
+        """
+        Given a handler output's type, generates a response towards the
+        processor
+        """
+
+        def as_json(body):
+            response["body"] = json_encoder(body)
+            response["content_type"] = "application/json"
 
         response = Response.empty_response()
 
@@ -47,19 +52,16 @@ class Response(object):
             if isinstance(handler_output[1], str):
                 response["body"] = handler_output[1]
             else:
-                response["body"] = json_encoder(handler_output[1])
-                response["content_type"] = "application/json"
+                as_json(handler_output[1])
 
         # if it's a dict, populate the response and set content type to json
         elif isinstance(handler_output, dict) or isinstance(handler_output, list):
-            response["content_type"] = "application/json"
-            response["body"] = json_encoder(handler_output)
+            as_json(handler_output)
 
         # if it's a response object, populate the response
         elif isinstance(handler_output, Response):
             if isinstance(handler_output.body, dict):
-                response["body"] = json.dumps(handler_output.body)
-                response["content_type"] = "application/json"
+                as_json(handler_output.body)
             else:
                 response["body"] = handler_output.body
                 response["content_type"] = handler_output.content_type

@@ -14,6 +14,32 @@
 
 import json
 
+import orjson
+
+
+class Factory(object):
+
+    @staticmethod
+    def create_decoder(name):
+        if name == "orjson":
+            return orjson.loads
+        return lambda o: json.loads(o.decode("utf-8"))
+
+    @staticmethod
+    def create_encoder(name):
+        if name == "orjson":
+            return OrJsonEncoder()
+
+        # default
+        return Encoder()
+
+    @staticmethod
+    def kinds():
+        return [
+            "json",
+            "orjson",
+        ]
+
 
 # JSON encoder that can encode custom stuff
 class Encoder(json.JSONEncoder):
@@ -21,3 +47,8 @@ class Encoder(json.JSONEncoder):
 
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
+
+
+class OrJsonEncoder(object):
+    def encode(self, obj):
+        return orjson.dumps(obj).decode()

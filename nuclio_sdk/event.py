@@ -87,12 +87,14 @@ class Event(object):
                 return value
 
     @staticmethod
-    def from_msgpack(parsed_data):
+    def from_msgpack(parsed_data, json_decoder):
         """Decode msgpack event encoded as JSON by processor"""
 
         # extract content type, needed to decode body
         content_type = parsed_data["content_type"]
-        body = Event.decode_msgpack_body(parsed_data["body"], content_type)
+        body = Event.decode_msgpack_body(
+            parsed_data["body"], content_type, json_decoder
+        )
         return Event.from_parsed_data(parsed_data, body, content_type)
 
     @staticmethod
@@ -151,12 +153,12 @@ class Event(object):
         return decoded_body
 
     @staticmethod
-    def decode_msgpack_body(body, content_type):
+    def decode_msgpack_body(body, content_type, json_decoder):
         """Decode msgpack event body"""
 
         if content_type == "application/json":
             try:
-                return json.loads(body.decode("utf-8"))
+                return json_decoder(body)
             except Exception as exc:
                 sys.stderr.write(str(exc))
 

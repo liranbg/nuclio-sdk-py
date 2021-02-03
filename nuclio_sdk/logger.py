@@ -18,10 +18,9 @@ import nuclio_sdk.json_encoder
 
 
 class JSONFormatter(logging.Formatter):
-    def __init__(self):
+    def __init__(self, encoder=None):
         super(JSONFormatter, self).__init__()
-
-        self._json_encoder = nuclio_sdk.json_encoder.Encoder()
+        self._json_encoder = encoder if encoder else nuclio_sdk.json_encoder.Encoder()
 
     def format(self, record):
         record_fields = {
